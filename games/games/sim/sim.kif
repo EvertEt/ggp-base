@@ -1,0 +1,155 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Battleship
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ROLE Relations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(role red)
+(role blue)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; BASE & INPUT Relations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(d 1) (d 2) (d 3) (d 4) (d 5) (d 6)
+(<= (base (line ?d1 ?d2 blank)) (d ?d1) (d ?d2))
+(<= (base (line ?d1 ?d2 r)) (d ?d1) (d ?d2))
+(<= (base (line ?d1 ?d2 b)) (d ?d1) (d ?d2))
+(base (control blue))
+(base (control red))
+
+(<= (input ?p (mark ?d1 ?d2)) (role ?p) (d ?d1) (d ?d2))
+(<= (input ?p noop) (role ?p))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; INIT Relations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(init (line 1 2 blank))
+(init (line 1 3 blank))
+(init (line 1 4 blank))
+(init (line 1 5 blank))
+(init (line 1 6 blank))
+(init (line 2 3 blank))
+(init (line 2 4 blank))
+(init (line 2 5 blank))
+(init (line 2 6 blank))
+(init (line 3 4 blank))
+(init (line 3 5 blank))
+(init (line 3 6 blank))
+(init (line 4 5 blank))
+(init (line 4 6 blank))
+(init (line 5 6 blank))
+(init (control red))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Dynamic Components
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Marking the lines
+
+;; a blank line that is marked gets a new color
+
+(<= (next (line ?d1 ?d2 r))
+    (does red (mark ?d1 ?d2))
+    (true (line ?d1 ?d2 blank)))
+
+(<= (next (line ?d1 ?d2 b))
+    (does blue (mark ?d1 ?d2))
+    (true (line ?d1 ?d2 blank)))
+
+;; a line that was marked, stays marked
+
+(<= (next (line ?d1 ?d2 ?r))
+    (true (line ?d1 ?d2 ?r))
+    (distinct ?r blank))
+
+;; a line that was blank and is not marked, stays blank
+
+(<= (next (line ?d11 ?d12 blank))
+    (does ?r (mark ?d21 ?d22))
+    (true (line ?d11 ?d12 blank))
+    (or (distinct ?d11 ?d21) (distinct ?d12 ?d22)))
+
+
+;; Switch turns
+
+(<= (next (control red))
+    (true (control blue)))
+
+(<= (next (control blue))
+    (true (control red)))
+
+;; Define a triangle
+
+(<= (triangle r)
+    (true (line ?d1 ?d2 r))
+    (true (line ?d2 ?d3 r))
+    (true (line ?d1 ?d3 r)))
+
+(<= (triangle b)
+    (true (line ?d1 ?d2 b))
+    (true (line ?d2 ?d3 b))
+    (true (line ?d1 ?d3 b)))
+
+
+;; At least one more line is blank
+
+(<= open
+    (true (line ?d1 ?d2 blank)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; LEGAL Relations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(<= (legal red noop)
+    (true (control blue)))
+(<= (legal red (mark ?d1 ?d2))
+    (true (control red))
+    (true (line ?d1 ?d2 blank)))
+
+(<= (legal blue noop)
+    (true (control red)))
+(<= (legal blue (mark ?d1 ?d2))
+    (true (control blue))
+    (true (line ?d1 ?d2 blank)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Goal Relations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(<= (goal red 100)
+    (triangle b))
+
+(<= (goal red 0)
+    (triangle r))
+
+(<= (goal blue 100)
+    (triangle r))
+
+(<= (goal blue 0)
+    (triangle b))
+
+(<= (goal red 50)
+    (not (triangle r))
+    (not (triangle b))
+    (not open))
+
+(<= (goal blue 50)
+    (not (triangle r))
+    (not (triangle b))
+    (not open))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(<= terminal
+    (triangle r))
+
+(<= terminal
+    (triangle b))
+
+(<= terminal
+    (not open))
