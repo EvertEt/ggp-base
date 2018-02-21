@@ -6,11 +6,6 @@
   <div>
     <!-- Set Style -->
     <style type="text/css" media="all">
-       td, tr, table {
-      	margin: 0;
-      	padding: 0;
-      	border: 0;
-      }
       td.cell {
         width:  <xsl:value-of select="$width * 0.02"/>px;
         height: <xsl:value-of select="$height * 0.02"/>px;
@@ -20,14 +15,13 @@
       table.board {
         background-color: #FFFFFF;
         border-style: none;
-        cellspacing:0;
       }
     </style>
     
     <!-- Draw Board -->
     <xsl:call-template name="board">
-      <xsl:with-param name="cols" select="49"/>
-      <xsl:with-param name="rows" select="51"/>
+      <xsl:with-param name="cols" select="50"/>
+      <xsl:with-param name="rows" select="50"/>
     </xsl:call-template>		    
   </div>  
   <xsl:if test="//fact[relation='line' and argument[1]=1 and argument[2]=2 and argument[3]='r']"> 
