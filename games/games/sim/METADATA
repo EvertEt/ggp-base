@@ -1,4 +1,5 @@
 {
-  "gameName": "SIM",
+  "gameName": "Sim",
   "rulesheet": "sim.kif",
+  "stylesheet": "sim.xsl"
 }
