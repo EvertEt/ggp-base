@@ -19,9 +19,6 @@ import java.util.List;
  */
 public final class AlphaBetaGamer extends SampleGamer {
 
-    int upperThreshold = 100;
-    int lowerThreshold = 0;
-
     /**
      * This function is called at the start of each round
      * You are required to return the Move your player will play
@@ -50,6 +47,9 @@ public final class AlphaBetaGamer extends SampleGamer {
     }
 
     private Move bestMove(Role role, MachineState state, List<Move> moves) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException {
+        int lowerThreshold = 0;
+        int upperThreshold = 100;
+
         Move best = moves.get(0);
         int score = 0;
         int alpha = lowerThreshold;
