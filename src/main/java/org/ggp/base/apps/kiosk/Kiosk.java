@@ -37,6 +37,8 @@ import org.ggp.base.server.event.ServerTimeoutEvent;
 import org.ggp.base.util.game.CloudGameRepository;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.game.GameRepository;
+import org.ggp.base.util.game.LocalGameRepository;
+import org.ggp.base.util.game.RemoteGameRepository;
 import org.ggp.base.util.gdl.grammar.GdlPool;
 import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.match.Match;
@@ -101,6 +103,8 @@ public final class Kiosk extends JPanel implements ActionListener, ItemListener,
     private final JTextField computerAddress;
 
     private final GameRepository theRepository;
+
+	private RemoteGameRepository theLocalRepo;
 
     public Kiosk()
     {
@@ -200,6 +204,7 @@ public final class Kiosk extends JPanel implements ActionListener, ItemListener,
         // game (with rulesheet) stored on this repository server. Changing this is
         // likely to break things unless you know what you're doing.
         theRepository = new CloudGameRepository("http://games.ggp.org/base/");
+        theLocalRepo = new RemoteGameRepository(LocalGameRepository.theLocalRepoURL);
     }
 
     class AvailableGame implements Comparable<AvailableGame> {
@@ -304,6 +309,9 @@ public final class Kiosk extends JPanel implements ActionListener, ItemListener,
                 AvailableGame theGame = selectedGame.getSelectedValue();
                 Game game = theRepository.getGame(theGame.kifFile);
 
+                if (game == null) {
+                	game = theLocalRepo.getGame(theGame.kifFile);
+                }
                 if (game == null) {
                     JOptionPane.showMessageDialog(this, "Cannot load game data for " + theGame.kifFile, "Error", JOptionPane.ERROR_MESSAGE);
                     return;
