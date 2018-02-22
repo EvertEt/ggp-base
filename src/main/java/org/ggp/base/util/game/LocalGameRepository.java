@@ -33,7 +33,7 @@ import external.JSON.JSONObject;
 public final class LocalGameRepository extends GameRepository {
     private static final int REPO_SERVER_PORT = 9140;
     private static HttpServer theLocalRepoServer = null;
-    public static String theLocalRepoURL = "http://127.0.0.1:" + REPO_SERVER_PORT;
+    private static String theLocalRepoURL = "http://127.0.0.1:" + REPO_SERVER_PORT;
 
     private static RemoteGameRepository theRealRepo;
 
