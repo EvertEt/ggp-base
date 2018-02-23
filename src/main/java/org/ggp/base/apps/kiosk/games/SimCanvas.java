@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ggp.base.apps.kiosk.GameCanvas;
+import org.ggp.base.util.statemachine.Move;
 
 public class SimCanvas extends GameCanvas {
 
@@ -120,5 +121,11 @@ public class SimCanvas extends GameCanvas {
 				submitWorkingMove(stringToMove(move));
 			}
 		}
+	}
+
+	@Override
+	protected void submitFinalMove(Move theMove) {
+		super.submitFinalMove(theMove);
+		repaint();
 	}
 }
